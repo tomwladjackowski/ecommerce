@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  username      String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  isAdmin       Boolean   @default(false)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  
+  access_token       String?  
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model Product {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  images      Image[]
+  price       Int?
+}
+model Image {
+  id          Int     @id @default(autoincrement())
+  title       String
+  path        String
+  productId   Int
+  // might be useful to make this relation
+  // thumbnails  Thumbnail[] 
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+// might be useful to create a model for thumbnails
+// model Thumbnail {
+//   id          Int     @id @default(autoincrement())
+//   path        String
+//   imageId     Int
+//   image       Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+// }
+model Order {
+  id       Int  @id @default(autoincrement())
+  customer String
+  products String
+  payment_intent String @unique
+  amount   Int
+}
