@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export default function MobileNav({handleHamburgerClick}) {
   return (
-  <div className="md:hidden fixed top-0 left-0 z-10 min-h-screen w-full bg-white shadow-lg">
+  <div className="fixed md:hidden z-10 top-0 left-0 min-h-screen w-full bg-white shadow-lg">
     <svg
       onClick={handleHamburgerClick}
       className='absolute cursor-pointer md:hidden top-6 left-6'
